@@ -1,4 +1,3 @@
-use cty;
 use vumeter_lib::audio_hw::{SwitchEvent,Pin};
 use SwitchEvent::*;
 use Pin::*;

@@ -1,4 +1,3 @@
-use cty;
 use vumeter_lib::audio_hw::TimerEvent;
 use TimerEvent::*;
 

@@ -23,10 +23,6 @@ static CFLAGS: &[&str] = &[
 static CPPFLAGS: &[&str] = &[
     "-D__IMXRT1062__",
     "-DARDUINO_TEENSY40",
-    // TODO figure out how to handle / alias these
-    "-DFLASHMEM=__attribute__((section(\".flashmem\")))",
-    "-DPROGMEM=__attribute__((section(\".progmem\")))",
-    "-DDMAMEM=__attribute__ ((section(\".dmabuffers\"), used))",
 ];
 /// The C compiler
 static CC: &str = "arm-none-eabi-gcc";

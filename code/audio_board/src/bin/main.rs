@@ -16,6 +16,9 @@ extern crate nb;
 use biquad::frequency::*;
 // use boardlib;
 
+use bsp::hal::ccm;
+//use cortex_m::delay;
+use rt::entry;
 // use vu::protocol::{ParseState,PWM};
 use vu::protocol as pkt;
 use pkt::Pkt;
@@ -23,24 +26,28 @@ use vu::bandpass as bp;
 use vu::audio_hw::*;
 use vu::shared::*;
 use teensy4_bsp as bsp;
-use bsp::rt::entry;
 use imxrt1062_pac;
-
 use log::info;
 
-use imxrt1062_rt as rt;
+use imxrt_rt as rt;
 use teensy4_bsp::interrupt;
-use teensy4_bsp::LED;
+//use teensy4_bsp::LED;
 
 use rt::interrupt;
 use embedded_hal::serial::{Read,Write};
 use embedded_hal::digital::v2::OutputPin;
-use embedded_hal::digital::v2::ToggleableOutputPin;
+//use embedded_hal::digital::v2::ToggleableOutputPin;
 use core::time::Duration;
 
 use boardlib::{spdif,uart,switch,timer};
 use cortex_m::asm::wfi;
 
+const PLL1_DIV_SEL: u32 = 100;
+const ARM_DIVIDER: u32 = 2;
+const AHB_DIVIDER: u32 = 1;
+pub const ARM_FREQUENCY: u32 =
+    ccm::analog::pll1::frequency(PLL1_DIV_SEL) / ARM_DIVIDER / AHB_DIVIDER;
+    
 #[interrupt]
 fn SPDIF() {
     unsafe{spdif::spdif_isr()};
@@ -61,10 +68,26 @@ fn PIT() {
     unsafe{timer::pit_isr()};
 }
 
+#[derive(Clone, Copy)]
+struct DelayTicks(u32);
+fn delay(_ticks: DelayTicks) {
+    #[cfg(all(target_arch = "arm", target_os = "none"))]
+    unsafe {
+        core::arch::asm! {
+            r#"
+                5:
+                subs {ticks}, #1 @ ticks--; Z = (0 == ticks);
+                bne 5b           @ if (0 == Z) goto 5;
+            "#,
+            ticks = inout(reg) _ticks.0 => _,
+        };
+    }
+}
+
 #[entry]
 fn main() -> ! {
     // WARNING: Must leave this uncommented
-    let mut peripherals = bsp::Peripherals::take().unwrap();
+    let mut peripherals = cortex_m::Peripherals::take().unwrap();
     let mut led = switch::Led::initialize().unwrap();
     led.set(true);
     let mut spdif = spdif::SPDIF::initialize().unwrap();
@@ -72,20 +95,19 @@ fn main() -> ! {
     let mut switch = switch::Switch::initialize().unwrap();
     let mut pwr = switch::Pwr::initialize().unwrap();
     let mut sleep_pin = switch::SleepPin::initialize().unwrap();
+    const DELAY: DelayTicks = DelayTicks(200);
 
     pwr.set(true);
 
     // Enabling logging increases current usage by about 10mA at 528MHz
     // peripherals.log.init(Default::default());
-    bsp::delay(200);
+    delay(DELAY);
     
     // Switch from 528 MHz to 600 (increases power consumption not quite linearly)
     // Must add a fudge factor to baud rate and sample rate
     // For some reason this seems to be required to get UART to work. Oh well. Extra speed can't hurt I guess
-    peripherals.ccm
-        .pll1
-        .set_arm_clock(bsp::hal::ccm::PLL1::ARM_HZ, &mut peripherals.ccm.handle, &mut peripherals.dcdc);
-
+ //   peripherals.ccm.pll1.set_arm_clock(bsp::hal::ccm::analog::pll1::frequency, &mut peripherals.ccm.handle, &mut peripherals.dcdc);
+    const _: () = assert!(ARM_FREQUENCY == 600_000_000);
     // Set up some memory for signal processing
     const MAX_BANDS : usize = 32;
     let mut l = [bp::BandState::default(); MAX_BANDS];

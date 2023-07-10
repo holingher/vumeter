@@ -48,20 +48,20 @@
 #define PIN_A11 (25)
 #define PIN_A12 (26)
 #define PIN_A13 (27)
-const static uint8_t A0 = PIN_A0;
-const static uint8_t A1 = PIN_A1;
-const static uint8_t A2 = PIN_A2;
-const static uint8_t A3 = PIN_A3;
-const static uint8_t A4 = PIN_A4;
-const static uint8_t A5 = PIN_A5;
-const static uint8_t A6 = PIN_A6;
-const static uint8_t A7 = PIN_A7;
-const static uint8_t A8 = PIN_A8;
-const static uint8_t A9 = PIN_A9;
-const static uint8_t A10 = PIN_A10;
-const static uint8_t A11 = PIN_A11;
-const static uint8_t A12 = PIN_A12;
-const static uint8_t A13 = PIN_A13;
+static const uint8_t A0 = PIN_A0;
+static const uint8_t A1 = PIN_A1;
+static const uint8_t A2 = PIN_A2;
+static const uint8_t A3 = PIN_A3;
+static const uint8_t A4 = PIN_A4;
+static const uint8_t A5 = PIN_A5;
+static const uint8_t A6 = PIN_A6;
+static const uint8_t A7 = PIN_A7;
+static const uint8_t A8 = PIN_A8;
+static const uint8_t A9 = PIN_A9;
+static const uint8_t A10 = PIN_A10;
+static const uint8_t A11 = PIN_A11;
+static const uint8_t A12 = PIN_A12;
+static const uint8_t A13 = PIN_A13;
 
 #define LED_BUILTIN   (13)
 
@@ -69,15 +69,15 @@ const static uint8_t A13 = PIN_A13;
 #define PIN_SPI_MOSI  (11)
 #define PIN_SPI_MISO  (12)
 #define PIN_SPI_SCK   (13)
-const static uint8_t SS = 10;
-const static uint8_t MOSI = 11;
-const static uint8_t MISO = 12;
-const static uint8_t SCK = 13;
+static const uint8_t SS = 10;
+static const uint8_t MOSI = 11;
+static const uint8_t MISO = 12;
+static const uint8_t SCK = 13;
 
 #define PIN_WIRE_SDA  (18)
 #define PIN_WIRE_SCL  (19)
-const static uint8_t SDA = 18;
-const static uint8_t SCL = 19;
+static const uint8_t SDA = 18;
+static const uint8_t SCL = 19;
 
 #define PIN_SERIAL_RX (0)
 #define PIN_SERIAL_TX (1)
